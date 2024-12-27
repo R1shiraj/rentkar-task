@@ -8,6 +8,7 @@ import Partner from '@/models/Partner';
 // import { z } from 'zod';
 // import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
+import { IAssignment } from '@/types';
 
 export async function GET(req: Request) {
   try {
@@ -49,6 +50,7 @@ export async function POST() {
   //GPT new random
   const con = (await mongoose.connect(process.env.MONGODB_URI!)).connection;
   const session = await con.startSession(); // Start the session using the connection
+  const assignments: IAssignment[] = [];
   console.log("Started session");
 
 
@@ -66,8 +68,6 @@ export async function POST() {
         status: 'active',
         // currentLoad: { $lt: 3 }
       });
-
-      const assignments = [];
 
       console.log("pendingOrders = ", pendingOrders.map(o => o.orderNumber))
       console.log("availablePartners = ", availablePartners.map(p => p.name + " " + p.currentLoad))
@@ -88,7 +88,7 @@ export async function POST() {
 
         // Find best matching partner based on area and load
         const matchingPartner = availablePartners.find(partner =>
-          partner?.areas?.map(pArea => pArea.toLowerCase()).includes(order?.area?.toLowerCase()) &&
+          partner?.areas?.map((pArea: string) => pArea.toLowerCase()).includes(order?.area?.toLowerCase()) &&
           partner.currentLoad < 3 &&
           // Check if partner's shift covers the order's scheduled time
           isTimeWithinShift(order.scheduledFor, partner.shift)
@@ -103,13 +103,14 @@ export async function POST() {
             orderId: order._id,
             partnerId: matchingPartner._id,
             timestamp: new Date(),
-            status: 'success'
+            status: 'success',
+            reason: 'Partner found for the Time and Area'
           });
 
           // Update order
           await Order.findByIdAndUpdate(order._id, {
             status: 'assigned',
-            assignedTo: matchingPartner._id
+            assignedTo: matchingPartner._id,
           });
 
           // Update partner's current load
@@ -128,12 +129,13 @@ export async function POST() {
           assignments.push(assignment);
         }
       }
+    });
       console.log("assignments = ", assignments)
       return NextResponse.json({
         message: 'Assignment process completed',
         assignments
       });
-    });
+
   } catch (error) {
     console.log("error", error)
     return NextResponse.json(

@@ -14,14 +14,29 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { IAssignment, IAssignmentMetrics } from '@/types';
+import { IAssignmentMetrics } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+interface Assignment {
+  _id?: string;
+  orderId?: {
+    orderNumber: string;
+    status: 'pending' | 'assigned' | 'picked' | 'delivered';
+  };
+  partnerId?: {
+    email: string;
+    name: string;
+  };
+  timestamp: Date;
+  status: 'success' | 'failed' | 'pending' | 'assigned' | 'picked' | 'delivered';
+  reason?: string;
+}
+
 export default function AssignmentDashboard() {
-  const [assignments, setAssignments] = useState<IAssignment[]>([]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [metrics, setMetrics] = useState<IAssignmentMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -172,7 +187,7 @@ export default function AssignmentDashboard() {
                 assignments.map((assignment) => (
                   <TableRow key={assignment._id}>
                     <TableCell className="font-medium">
-                      {assignment?.orderId.orderNumber}
+                      {assignment?.orderId?.orderNumber}
                     </TableCell>
                     <TableCell>
                       {assignment?.partnerId ? assignment.partnerId.name : 'None'}

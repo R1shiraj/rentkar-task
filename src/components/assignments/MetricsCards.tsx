@@ -1,9 +1,9 @@
 // src/components/assignments/MetricsCards.tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AssignmentMetrics } from '@/types';
+import { IAssignmentMetrics } from '@/types';
 
 interface MetricsCardsProps {
-  metrics: AssignmentMetrics;
+  metrics: IAssignmentMetrics;
 }
 
 export default function MetricsCards({ metrics }: MetricsCardsProps) {

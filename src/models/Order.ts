@@ -39,15 +39,13 @@ const orderSchema = new Schema<IOrder>({
     min: 0
   }
 }, {
-  timestamps: true,
-  // Add indexes in the schema options instead
-  indexes: [
-    { orderNumber: 1 },
-    { status: 1 },
-    { area: 1 },
-    // { assignedTo: 1 }
-  ]
+  timestamps: true
 });
+
+// // Add indexes separately
+// orderSchema.index({ orderNumber: 1 });
+// orderSchema.index({ status: 1 });
+// orderSchema.index({ area: 1 });
 
 // Remove the separate index declarations
 // orderSchema.index({ orderNumber: 1 });

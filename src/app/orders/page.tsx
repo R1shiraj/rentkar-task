@@ -52,9 +52,9 @@ export default function OrdersPage() {
   };
 
   const columns = [
-    { header: 'Order #', accessor: 'orderNumber' },
+    { header: 'Order #', accessor: 'orderNumber' as keyof Order },
     { header: 'Customer', accessor: (order: Order) => order.customer.name },
-    { header: 'Area', accessor: 'area' },
+    { header: 'Area', accessor: 'area' as keyof Order },
     { 
       header: 'Status', 
       accessor: (order: Order) => <StatusBadge status={order.status} />
@@ -67,7 +67,7 @@ export default function OrdersPage() {
           currency: 'USD' 
         }).format(order.totalAmount)
     },
-    { header: 'Scheduled For', accessor: 'scheduledFor' },
+    { header: 'Scheduled For', accessor: 'scheduledFor' as keyof Order },
   ];
 
   const handleRowClick = (order: Order) => {
