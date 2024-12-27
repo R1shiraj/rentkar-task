@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ModeToggle } from "../ui/mode-toggle";
 import { Button } from "../ui/button";
 
 export function NavBar() {
@@ -16,7 +15,6 @@ export function NavBar() {
         <Link href={"/orders"}>
           <Button>Orders</Button>
         </Link>
-        <ModeToggle />
       </div>
     </div>
   );
