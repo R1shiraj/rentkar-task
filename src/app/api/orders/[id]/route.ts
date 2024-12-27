@@ -108,6 +108,7 @@ export async function PUT(
 }
 
 export async function DELETE(
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
