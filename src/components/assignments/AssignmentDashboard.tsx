@@ -41,6 +41,7 @@ export default function AssignmentDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
   console.log("assignments = ", assignments)
 
@@ -102,6 +103,39 @@ export default function AssignmentDashboard() {
     }
   };
 
+  const deleteFailedAssignments = async () => {
+    try {
+      setIsDeleting(true);
+      const response = await fetch('/api/assignments', {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete assignments');
+      }
+      
+      const result = await response.json();
+      
+      toast({
+        title: "Success",
+        description: `Deleted ${result.deletedCount} failed assignments`,
+      });
+      
+      // Refresh data
+      await Promise.all([fetchAssignments(), fetchMetrics()]);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to delete assignments",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -155,13 +189,23 @@ export default function AssignmentDashboard() {
       
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Recent Assignments</h2>
-        <Button 
-          onClick={runAssignment} 
-          disabled={isProcessing}
-        >
-          {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Run Assignment Process
-        </Button>
+        <div className="space-x-4">
+          <Button 
+            variant="destructive"
+            onClick={deleteFailedAssignments} 
+            disabled={isDeleting || isProcessing}
+          >
+            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Delete Failed Assignments
+          </Button>
+          <Button 
+            onClick={runAssignment} 
+            disabled={isProcessing || isDeleting}
+          >
+            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Run Assignment Process
+          </Button>
+        </div>
       </div>
 
       <Card>

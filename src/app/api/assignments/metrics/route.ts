@@ -5,6 +5,9 @@ import Assignment from '@/models/Assignment';
 import { IAssignmentMetrics } from '@/types';
 
 export async function GET() {
+  const startTime = Date.now(); // Start timing
+
+
   try {
     await connectDB();
     
@@ -17,8 +20,8 @@ export async function GET() {
     const successRate = (successfulAssignments.length / totalAssigned) * 100;
     
     // Calculate average assignment time
-    const successfulTimestamps = successfulAssignments.map(a => a.timestamp);
-    const averageTime = calculateAverageTime(successfulTimestamps);
+    // const successfulTimestamps = successfulAssignments.map(a => a.timestamp);
+    // const averageTime = calculateAverageTime(successfulTimestamps);
     
     // Get failure reasons
     const failureReasons = assignments
@@ -34,6 +37,10 @@ export async function GET() {
         return acc;
       }, []);
     
+    const endTime = Date.now(); // End timing
+    const averageTime = endTime - startTime; // Calculate execution time in milliseconds
+  
+
     const metrics: IAssignmentMetrics = {
       totalAssigned,
       successRate,
@@ -50,12 +57,12 @@ export async function GET() {
   }
 }
 
-function calculateAverageTime(timestamps: Date[]): number {
-  if (timestamps.length === 0) return 0;
+// function calculateAverageTime(timestamps: Date[]): number {
+//   if (timestamps.length === 0) return 0;
   
-  const total = timestamps.reduce((sum, timestamp) => {
-    return sum + timestamp.getTime();
-  }, 0);
+//   const total = timestamps.reduce((sum, timestamp) => {
+//     return sum + timestamp.getTime();
+//   }, 0);
   
-  return total / timestamps.length;
-}
+//   return total / timestamps.length;
+// }

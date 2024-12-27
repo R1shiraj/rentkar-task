@@ -1,4 +1,3 @@
-import { ThemeProvider } from "@/components/ui/theme-provider";
 import "./globals.css";
 // import { ModeToggle } from "@/components/ui/mode-toggle";
 // import { NavBar } from "@/components/layout/navbar";
@@ -12,12 +11,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
           {/* <NavBar /> */}
           <div className="flex h-screen">
             <Sidebar />
@@ -25,7 +18,6 @@ export default function RootLayout({
               {children}
             </main>
           </div>
-        </ThemeProvider>
       </body>
     </html>
   );

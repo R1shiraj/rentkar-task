@@ -147,6 +147,26 @@ export async function POST() {
     await session.endSession();
   }
 }
+
+// DELETE /api/assignments/failed - Delete all failed assignments
+export async function DELETE() {
+  try {
+    await connectDB();
+    const result = await Assignment.deleteMany({ status: 'failed' });
+    
+    return NextResponse.json({
+      message: 'Failed assignments deleted successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error("Error deleting failed assignments:", error);
+    return NextResponse.json(
+      { error: 'Failed to delete assignments' },
+      { status: 500 }
+    );
+  }
+}
+
 // Helper function to check if time is within shift
 function isTimeWithinShift(scheduledTime: string, shift: { start: string; end: string }) {
   const scheduled = new Date(`1970/01/01 ${scheduledTime}`);
