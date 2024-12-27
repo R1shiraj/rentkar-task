@@ -109,11 +109,12 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    const order = await Order.findByIdAndDelete(params.id);
+    const { id } = (await params)
+    const order = await Order.findByIdAndDelete(id);
 
     if (!order) {
       return NextResponse.json(
