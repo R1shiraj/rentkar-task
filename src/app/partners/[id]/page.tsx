@@ -1,22 +1,42 @@
-// src/app/partners/[id]/page.tsx
-'use client';
+"use client";
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { IDeliveryPartner } from '@/types/partner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { X } from 'lucide-react';
+
+interface IDeliveryPartner {
+  _id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: 'active' | 'inactive';
+  currentLoad: number;
+  areas: string[];
+  shift: {
+    start: string;
+    end: string;
+  };
+  metrics: {
+    rating: number;
+    completedOrders: number;
+    cancelledOrders: number;
+  };
+}
 
 export default function EditPartnerPage({ 
-  params, 
+  params 
 }: { 
   params: Promise<{ id: string }> 
 }) {
   const [partner, setPartner] = useState<IDeliveryPartner | null>(null);
+  const [newArea, setNewArea] = useState('');
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const { id } = use(params)
+  const { id } = use(params);
+
   useEffect(() => {
     fetchPartner();
   }, [id]);
@@ -42,11 +62,29 @@ export default function EditPartnerPage({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(partner),
       });
-
       if (!response.ok) throw new Error('Failed to update partner');
       router.push('/partners');
     } catch (error) {
       console.error('Error:', error);
+    }
+  };
+
+  const addArea = () => {
+    if (newArea.trim() && partner) {
+      setPartner(prev => ({
+        ...prev!,
+        areas: [...prev!.areas, newArea.trim()]
+      }));
+      setNewArea('');
+    }
+  };
+
+  const removeArea = (index: number) => {
+    if (partner) {
+      setPartner(prev => ({
+        ...prev!,
+        areas: prev!.areas.filter((_, i) => i !== index)
+      }));
     }
   };
 
@@ -108,6 +146,47 @@ export default function EditPartnerPage({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="currentLoad">Current Load (max: 3)</Label>
+            <Input
+              id="currentLoad"
+              type="number"
+              min="0"
+              max="3"
+              value={partner.currentLoad}
+              onChange={(e) => setPartner(prev => ({...prev!, currentLoad: parseInt(e.target.value)}))}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Areas</Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {partner.areas.map((area, index) => (
+                <div key={index} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
+                  <span>{area}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeArea(index)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newArea}
+                onChange={(e) => setNewArea(e.target.value)}
+                placeholder="Add new area"
+              />
+              <Button type="button" onClick={addArea} variant="outline">
+                Add
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label>Shift Timing</Label>
             <div className="flex gap-2">
               <Input
@@ -126,6 +205,56 @@ export default function EditPartnerPage({
                   shift: { ...prev!.shift, end: e.target.value }
                 }))}
               />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Metrics</Label>
+            <div className="space-y-2">
+              <div>
+                <Label htmlFor="rating">Rating</Label>
+                <Input
+                  id="rating"
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value={partner.metrics.rating}
+                  onChange={(e) => setPartner(prev => ({
+                    ...prev!,
+                    metrics: { ...prev!.metrics, rating: parseFloat(e.target.value) }
+                  }))}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="completedOrders">Completed Orders</Label>
+                <Input
+                  id="completedOrders"
+                  type="number"
+                  min="0"
+                  value={partner.metrics.completedOrders}
+                  onChange={(e) => setPartner(prev => ({
+                    ...prev!,
+                    metrics: { ...prev!.metrics, completedOrders: parseInt(e.target.value) }
+                  }))}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="cancelledOrders">Cancelled Orders</Label>
+                <Input
+                  id="cancelledOrders"
+                  type="number"
+                  min="0"
+                  value={partner.metrics.cancelledOrders}
+                  onChange={(e) => setPartner(prev => ({
+                    ...prev!,
+                    metrics: { ...prev!.metrics, cancelledOrders: parseInt(e.target.value) }
+                  }))}
+                  required
+                />
+              </div>
             </div>
           </div>
 

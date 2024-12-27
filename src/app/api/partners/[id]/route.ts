@@ -8,11 +8,12 @@ import { z } from 'zod';
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    const partner = await Partner.findById(params.id);
+    const { id } = (await params)
+    const partner = await Partner.findById(id);
     
     if (!partner) {
       return NextResponse.json(
@@ -32,17 +33,18 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await req.json();
     
     // Validate request body
     const validatedData = partnerSchema.parse(body);
+    const { id } = (await params)
     
     await connectDB();
     const partner = await Partner.findByIdAndUpdate(
-      params.id,
+      id,
       validatedData,
       { new: true }
     );
@@ -72,11 +74,13 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    const partner = await Partner.findByIdAndDelete(params.id);
+    const { id } = (await params)
+
+    const partner = await Partner.findByIdAndDelete(id);
     
     if (!partner) {
       return NextResponse.json(
