@@ -14,7 +14,12 @@ export async function GET(req: Request) {
 
     await connectDB();
     
-    const query: any = {};
+    interface IQueryParams {
+      status?: string;
+      area?: string;
+    }
+    
+    const query: IQueryParams = {};
     if (status) query.status = status;
     if (area) query.area = area;
 
@@ -23,9 +28,9 @@ export async function GET(req: Request) {
       .sort({ createdAt: -1 });
 
     return NextResponse.json(orders);
-  } catch (error) {
+  } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to fetch orders' },
+      { error: 'Failed to fetch orders, err = ', err },
       { status: 500 }
     );
   }

@@ -24,9 +24,10 @@ export async function GET(
     }
 
     return NextResponse.json(order);
-  } catch (error) {
+  } catch (err) {
+    console.error('Error fetching order:', err);
     return NextResponse.json(
-      { error: 'Failed to fetch order' },
+      { error: 'Failed to fetch order, error = ', err },
       { status: 500 }
     );
   }
@@ -122,9 +123,9 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: 'Order deleted successfully' });
-  } catch (error) {
+  } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to delete order' },
+      { error: 'Failed to delete order, err = ', err },
       { status: 500 }
     );
   }

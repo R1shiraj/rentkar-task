@@ -26,7 +26,7 @@ const actionTypes = {
 } as const
 
 let count = 0
-
+console.log(actionTypes.ADD_TOAST)
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER
   return count.toString()

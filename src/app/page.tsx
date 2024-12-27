@@ -4,13 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Users, Package, MapPin, TrendingUp, 
-  Clock, CheckCircle, AlertCircle, Truck 
+  Users, Package, TrendingUp, 
+  Clock, CheckCircle
 } from 'lucide-react';
+import { IDeliveryPartner } from '@/types/partner';
+import { IOrder } from '@/types/order';
 
 const Dashboard = () => {
-  const [orders, setOrders] = useState([]);
-  const [partners, setPartners] = useState([]);
+  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [partners, setPartners] = useState<IDeliveryPartner[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +54,10 @@ const Dashboard = () => {
     picked: 'bg-purple-100 text-purple-800',
     delivered: 'bg-green-100 text-green-800'
   };
+
+  if (loading) {
+    return <div className="flex justify-center p-8">Loading...</div>;
+  }
 
   return (
     <div className="p-6 space-y-6">

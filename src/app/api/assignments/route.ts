@@ -17,7 +17,12 @@ export async function GET(req: Request) {
 
     await connectDB();
 
-    const query: any = {};
+    interface IQueryParams {
+      status?: string;
+      partnerId?: string;
+    }
+    
+    const query: IQueryParams = {};
     if (status) query.status = status;
     if (partnerId) query.partnerId = partnerId;
 
@@ -26,16 +31,16 @@ export async function GET(req: Request) {
       .populate('partnerId', 'name email')
       .sort({ timestamp: -1 });
     return NextResponse.json(assignments);
-  } catch (error) {
+  } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to fetch assignments' },
+      { error: 'Failed to fetch assignments, error = ', err },
       { status: 500 }
     );
   }
 }
 
 // POST /api/assignments/run - Automatic assignment system
-export async function POST(req: Request) {
+export async function POST() {
   //await connectDB();
   //Claude OLD
   // const session = await connectDB().startSession();

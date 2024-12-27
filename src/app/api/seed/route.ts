@@ -14,9 +14,9 @@ export async function POST() {
         { status: 500 }
       );
     }
-  } catch (error) {
+  } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to seed database' },
+      { error: 'Failed to seed database, err = ', err },
       { status: 500 }
     );
   }

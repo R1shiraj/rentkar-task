@@ -2,8 +2,9 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/dbConnect';
 import Assignment from '@/models/Assignment';
+import { IAssignmentMetrics } from '@/types';
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     await connectDB();
     
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
         return acc;
       }, []);
     
-    const metrics: AssignmentMetrics = {
+    const metrics: IAssignmentMetrics = {
       totalAssigned,
       successRate,
       averageTime,
@@ -41,9 +42,9 @@ export async function GET(req: Request) {
     };
     
     return NextResponse.json(metrics);
-  } catch (error) {
+  } catch (err) {
     return NextResponse.json(
-      { error: 'Failed to fetch assignment metrics' },
+      { error: 'Failed to fetch assignment metrics, error = ', err },
       { status: 500 }
     );
   }

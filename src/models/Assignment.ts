@@ -1,6 +1,6 @@
 // src/models/Assignment.ts
 import mongoose from 'mongoose';
-import { IAssignment, IAssignmentMetrics } from '@/types';
+import { IAssignment } from '@/types';
 
 
 const assignmentSchema = new mongoose.Schema<IAssignment>({
